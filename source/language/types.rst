@@ -116,17 +116,6 @@ significantly since there is no need for quantum memory management.
 However, it also means that users or compiler have to explicitly manage
 the quantum memory.
 
-.. _physical-qubits:
-
-Physical Qubits
-~~~~~~~~~~~~~~~
-
-While program qubits can be named, hardware qubits are referenced only
-by the syntax ``$[NUM]``. For an ``n`` qubit system, we have physical qubit
-references given by ``$0``, ``$1``, ..., ``$n-1``. These qubit types are
-used in lower parts of the compilation stack when emitting physical
-circuits. Physical qubits must not be declared and they are, as all the qubits, global variables.
-
 .. code-block::
 
    // Declare a qubit
@@ -135,8 +124,64 @@ circuits. Physical qubits must not be declared and they are, as all the qubits, 
    qubit γ;
    // Declare a qubit register with 20 qubits
    qubit[20] qubit_array;
+
+.. _physical-qubits:
+
+Physical Qubits
+~~~~~~~~~~~~~~~
+
+Physical qubits refer to particular hardware qubits. Therefore, they are only fully defined with
+respect to a target device that has a published device topology. The hardware provider determines
+the integer-labels associated with each qubit within the device's topology.
+
+While virtual qubits can be named, hardware qubits are referenced by the syntax ``$[INT]``. Any integer
+included in the published device topology is a valid physical qubit identifier. Note that this implies
+that physical qubit identifier indices may be non-consecutive, depending on the device.
+
+Physical qubits must not be declared. Like virtual qubits, they are global variables.
+
+These qubit types are often used for `defcal`s because calibrations are typically valid only for one
+physical qubit (see also :ref:`pulse gates <pulse-gates>`).
+
+Physical qubits are also used in lower parts of the compilation stack when emitting physical
+circuits. A physical circuit, also called an executable circuit, is one which only references
+physical qubits, and every gate used in the circuit has an associated `defcal`, which we can
+call physical gates. Like physical qubits themselves, physical circuits and physical gates are
+defined with respect to a device.
+
+.. code-block::
+
    // CNOT gate between physical qubits 0 and 1
    CX $0, $1;
+   // Define the pulse-level instruction sequence for `h` on physical qubit 0
+   defcal h $0 { ... }
+
+.. All these have the same answer
+.. Should defaults be given, or should the compiler be required to specify its behavior?
+.. TODO: Should all be optionally allowed?
+.. Probably better not to choose the default here!
+.. There are several implied constraints which apply to physical qubits, but not virtual qubits.
+There are several constraints implied by physical qubits, which do not apply to virtual qubits.
+In general, the constraints can be turned on or relaxed by compiler or execution options. It is
+up to the user to refer to the hardware provider's documenation to learn the provider's default
+interpretation.
+
+First, physical qubits imply that qubit re-mapping is not allowed by the compiler. In other words,
+circuit equivalence does not hold over permutations of physical qubit labels. A compiler can
+expose a user option to allow physical qubit remapping. If it allows it by default, it should
+include an option to strictly enforce the qubit mapping.
+
+..  - can 2q ops be allowed? Requires input from the user
+Second, multi-qubit gates on physical qubits must be applied to qubits which are neighboring one another,
+according to the target device topology. A compiler can again offer the user an option to allow the
+insertion of routing gates, enabling multi-qubit operations on physical, disconnected qubits.
+For example, given a line topology, the gate `CX $0, $2;` can be routed through physical qubit `$1`.
+
+..  - can supported gates be allowed?
+Third, it is not allowed to that are defined in terms of physical gates are not allowed, by default. TODO...
+
+..  - what about mixes of physical and virtual qubits? again, optionally allow support. or forbid it.
+Finally, a program which defines virtual qubits and also uses physical qubits is not allowed. TODO...
 
 Classical scalar types
 ----------------------
