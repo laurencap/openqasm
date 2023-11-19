@@ -156,32 +156,43 @@ defined with respect to a device.
    // Define the pulse-level instruction sequence for `h` on physical qubit 0
    defcal h $0 { ... }
 
-.. All these have the same answer
-.. Should defaults be given, or should the compiler be required to specify its behavior?
-.. TODO: Should all be optionally allowed?
-.. Probably better not to choose the default here!
-.. There are several implied constraints which apply to physical qubits, but not virtual qubits.
 There are several constraints implied by physical qubits, which do not apply to virtual qubits.
-In general, the constraints can be turned on or relaxed by compiler or execution options. It is
-up to the user to refer to the hardware provider's documenation to learn the provider's default
-interpretation.
+These constraints relate to qubit remapping, qubit routing, and gate validity.
 
-First, physical qubits imply that qubit re-mapping is not allowed by the compiler. In other words,
-circuit equivalence does not hold over permutations of physical qubit labels. A compiler can
-expose a user option to allow physical qubit remapping. If it allows it by default, it should
-include an option to strictly enforce the qubit mapping.
+First, physical qubits imply that qubits will not be remapped. In other words, circuit
+equivalence does not hold over permutations of physical qubit labels.
+Thus, if a compiler or hardware provider API supports physical qubits, then either the qubit map
+is always strictly encorced, or there must be a user option to prevent remapping.
 
-..  - can 2q ops be allowed? Requires input from the user
-Second, multi-qubit gates on physical qubits must be applied to qubits which are neighboring one another,
-according to the target device topology. A compiler can again offer the user an option to allow the
-insertion of routing gates, enabling multi-qubit operations on physical, disconnected qubits.
+Second, multi-qubit gates on physical qubits imply that the qubits neighbor one another, according
+to the target device topology. Like mapping, a compiler can offer the user an option to allow routing.
+This enables multi-qubit operations on disconnected qubits.
 For example, given a line topology, the gate `CX $0, $2;` can be routed through physical qubit `$1`.
 
-..  - can supported gates be allowed?
-Third, it is not allowed to that are defined in terms of physical gates are not allowed, by default. TODO...
+Third, though less strongly implied, a gate applied to a physical qubit would seem to imply that the
+gate itself is a physical gate.
+.. TODO: contrast against physical circuits requiring physical gates
 
+.. TODO
+.. - Should defaults be given, or should the compiler be required to specify its behavior?
+.. - Should all be optionally allowed?
+.. - Probably better not to choose the default here!
+.. - If physical qubits are supported, there must be an option to maintain strict mapping.
+.. - Other things are valid OpenQASM, but may not always be allowed
+Thus, succinctly, physical qubits imply no qubit remapping, no qubit routing, and only physical
+gates. A compiler or hardware provider can relax these constraints, and should allow the user
+an option to opt-in to these constraints if they are not the default behavior.
+It is up to the user to refer to the hardware provider's documenation to learn the provider's
+default interpretation for physical qubits.
+
+In all cases, the resulting programs are valid OpenQASM.
+
+.. TODO
 ..  - what about mixes of physical and virtual qubits? again, optionally allow support. or forbid it.
-Finally, a program which defines virtual qubits and also uses physical qubits is not allowed. TODO...
+Finally, it is possible to write a program with both physical and virtual qubits. Similar to the
+previous considerations, such programs are valid, but may not be supported by compilers or hardware
+providers. If it is supported, there should again be an option to assert that physical qubits
+maintain a strict mapping.
 
 Classical scalar types
 ----------------------
