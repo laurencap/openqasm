@@ -157,24 +157,29 @@ defined with respect to a device.
    defcal h $0 { ... }
 
 There are several constraints implied by physical qubits, which do not apply to virtual qubits.
-These constraints relate to qubit remapping, qubit routing, and gate validity.
+They relate to qubit remapping, qubit routing, and gate validity.
 
 First, physical qubits imply that qubits will not be remapped. In other words, circuit
 equivalence does not hold over permutations of physical qubit labels.
-Thus, if a compiler or hardware provider API supports physical qubits, then either the qubit map
+Thus, if a compiler or hardware provider supports physical qubits, then either the qubit map
 is always strictly encorced, or there must be a user option to prevent remapping.
 
 Second, multi-qubit gates on physical qubits imply that the qubits neighbor one another, according
-to the target device topology. Like mapping, a compiler can offer the user an option to allow routing.
-This enables multi-qubit operations on disconnected qubits.
-For example, given a line topology, the gate `CX $0, $2;` can be routed through physical qubit `$1`.
+to the target device topology. Like mapping, a compiler can offer the user an option to allow
+routing, which enables operations on disconnected qubits.
+For example, given a device with a line topology, the gate `CX $0, $2;` can be routed through
+physical qubit `$1`.
 
-Third, a gate applied to a physical qubit may imply that the gate itself is a physical gate.
-.. TODO: contrast against physical circuits requiring physical gates
+Third, a gate applied to a physical qubit implies that the gate itself is a physical gate.
+Once again, the compiler or hardware provider can offer an option to relax this condition.
+For example, a program defines the `H` gate with the `gate` statement. `H` is therefore a
+supported gate, but not a physical gate. The compiler can decompose the statement `H $0;` to
+physical gates, while still respecting strict qubit mapping.
 
-.. TODO
-.. - Should all be optionally allowed?
-.. - Maybe better not to choose the default here
+Note that while physical circuits require physical gates on physical qubits, the converse need not
+be true: a gate that is not a physical gate (i.e., does not have a `defcal`) can take physical
+qubits as operands.
+
 Thus, succinctly, physical qubits imply no qubit remapping, no qubit routing, and only physical
 gates. A compiler or hardware provider can optionally relax these constraints, and should allow
 the user to opt-in to these constraints when they are not the default behavior.
