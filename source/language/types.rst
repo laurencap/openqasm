@@ -169,30 +169,25 @@ to the target device topology. Like mapping, a compiler can offer the user an op
 This enables multi-qubit operations on disconnected qubits.
 For example, given a line topology, the gate `CX $0, $2;` can be routed through physical qubit `$1`.
 
-Third, though less strongly implied, a gate applied to a physical qubit would seem to imply that the
-gate itself is a physical gate.
+Third, a gate applied to a physical qubit may imply that the gate itself is a physical gate.
 .. TODO: contrast against physical circuits requiring physical gates
 
 .. TODO
-.. - Should defaults be given, or should the compiler be required to specify its behavior?
 .. - Should all be optionally allowed?
-.. - Probably better not to choose the default here!
-.. - If physical qubits are supported, there must be an option to maintain strict mapping.
-.. - Other things are valid OpenQASM, but may not always be allowed
+.. - Maybe better not to choose the default here
 Thus, succinctly, physical qubits imply no qubit remapping, no qubit routing, and only physical
-gates. A compiler or hardware provider can relax these constraints, and should allow the user
-an option to opt-in to these constraints if they are not the default behavior.
+gates. A compiler or hardware provider can optionally relax these constraints, and should allow
+the user to opt-in to these constraints when they are not the default behavior.
 It is up to the user to refer to the hardware provider's documenation to learn the provider's
 default interpretation for physical qubits.
 
-In all cases, the resulting programs are valid OpenQASM.
+In all cases, the resulting programs are valid OpenQASM, but with relaxed constraints, the program
+is not a physical circuit, and may not be directly executable on a device.
 
-.. TODO
-..  - what about mixes of physical and virtual qubits? again, optionally allow support. or forbid it.
 Finally, it is possible to write a program with both physical and virtual qubits. Similar to the
 previous considerations, such programs are valid, but may not be supported by compilers or hardware
-providers. If it is supported, there should again be an option to assert that physical qubits
-maintain a strict mapping.
+providers.
+
 
 Classical scalar types
 ----------------------
