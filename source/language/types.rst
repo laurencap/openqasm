@@ -134,14 +134,15 @@ Physical qubits refer to particular hardware qubits. Therefore, they are only fu
 respect to a target device that has a published device topology. The hardware provider determines
 the integer-labels associated with each qubit within the device's topology.
 
-While virtual qubits can be named, hardware qubits are referenced by the syntax ``$[INT]``. Any integer
-included in the published device topology is a valid physical qubit identifier. Note that this implies
-that physical qubit identifier indices may be non-consecutive, depending on the device.
+While virtual qubits can be named, hardware qubits are referenced by the syntax ``$[NUM]``, where
+`NUM` is a non-negative integer. Any integer included in the published device topology is a valid
+physical qubit identifier. Note that this implies that physical qubit identifier indices may be
+non-consecutive, depending on the device.
 
 Physical qubits must not be declared. Like virtual qubits, they are global variables.
 
-These qubit types are often used for `defcal`s because calibrations are typically valid only for one
-physical qubit (see also :ref:`pulse gates <pulse-gates>`).
+These qubit types are often used for `defcal`s because calibrations are typically valid only
+for a particular set of physical qubits (see also :ref:`pulse gates <pulse-gates>`).
 
 Physical qubits are also used in lower parts of the compilation stack when emitting physical
 circuits. A physical circuit, also called an executable circuit, is one which only references
