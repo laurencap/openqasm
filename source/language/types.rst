@@ -187,7 +187,7 @@ It is up to the user to refer to the hardware provider's documenation to learn t
 default interpretation for physical qubits.
 
 In all cases, the resulting programs are valid OpenQASM, but with relaxed constraints, the program
-is not a physical circuit, and may not be directly executable on a device.
+may not be a physical circuit, and may not be supported for execution by the hardware provider.
 
 Finally, it is possible to write a program with both physical and virtual qubits. Similar to the
 previous considerations, such programs are valid, but may not be supported by compilers or hardware
