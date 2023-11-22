@@ -145,6 +145,7 @@ not be declared.
 These qubit types are often used for `defcal`s because calibrations are typically valid only
 for a particular set of physical qubits (see also :ref:`pulse gates <pulse-gates>`).
 
+.. TODO: where is a better place for physical circuit discussion
 Physical qubits are also used in lower parts of the compilation stack when emitting physical
 circuits. A physical circuit is one which only references physical qubits, and every gate used
 in the circuit has an associated `defcal`, which we can call hardware-native gates.
@@ -159,42 +160,28 @@ in the circuit has an associated `defcal`, which we can call hardware-native gat
    defcal h $0 { ... }
 
 
-Physical qubits constraints
-...........................
+Physical qubit constraints
+..........................
 .. TODO: Can physical qubits be used in a `defgate`? My guess is no.
-.. TODO: Only the first point is really strongly implied. Erik points out that
-..       all of these are only necessary for physical circuits. Maybe it's best
-..       to say physical qubits only _enforce_ no qubit remapping. And so routing
-..       and supported gates w physical qubits are fully okay, whereas they're not
-..       okay for physical circuits.
-Physical qubits imply no qubit remapping, no qubit routing, and only physical gates.
-A compiler or hardware provider can optionally relax these constraints, and should allow
-the user to opt-in to these constraints when they are not the default behavior.
-In all cases, the resulting programs are valid OpenQASM, but with relaxed constraints, the program
-may not be a physical circuit.
-It is up to the user to refer to the hardware provider's documentation to learn the provider's
-default interpretation for physical qubits.
 
-Physical qubits imply that qubits will not be remapped. In other words, circuit
-equivalence does not hold over permutations of physical qubit labels.
-Thus, if a compiler or hardware provider supports physical qubits, then either the qubit map
-is always strictly enforced, or there must be a user option to prevent remapping.
+Physical qubits, by definition, reference particular hardware qubits. Circuit equivalence does not
+hold over permutations of physical qubit labels. Thus, physical qubits cannot be remapped by a
+compiler or hardware provider without opt-in from the programmer.
 
-Multi-qubit gates on physical qubits imply that the qubits neighbor one another, according
-to the target device topology. Like mapping, a compiler can offer the user an option to allow
-routing, which enables operations on disconnected qubits.
-For example, given a device with a line topology, the gate `CX $0, $2;` can be routed through
-physical qubit `$1`.
+Note that while physical circuits require physical qubits, the converse need not be true. A circuit
+that would require routing or gate decomposition to run (i.e., does not have a `defcal` for every
+operation in the circuit) would by definition not be a physical circuit. However, physical qubits
+can still be used in such circuits.
 
-A gate applied to a physical qubit implies that the gate is a hardware-native gate.
-Once again, the compiler or hardware provider can offer an option to relax this condition.
 For example, a program defines the `H` gate with the `gate` statement. `H` is therefore a
 supported gate, but not a hardware-native gate. The compiler can decompose the statement `H $0;`
 to hardware-native gates, while still respecting strict qubit mapping.
 
-It is possible to write a program with both physical and virtual qubits. Similar to the
-previous considerations, such programs are valid, but may not be supported by compilers or hardware
-providers.
+It is up to the user to refer to the hardware provider's documentation to learn if the provider
+supports physical qubits outside of physical circuits.
+
+It is possible to write a program with both physical and virtual qubits. Such programs are also
+non-physical circuits, and may or may not be supported by compilers or hardware providers.
 
 
 Classical scalar types
