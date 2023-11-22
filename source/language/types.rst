@@ -149,8 +149,7 @@ for a particular set of physical qubits (see also :ref:`pulse gates <pulse-gates
 Physical qubits are also used in lower parts of the compilation stack when emitting physical
 circuits. A physical circuit is one which only references physical qubits, and every gate used
 in the circuit has an associated `defcal`, which we can call hardware-native gates.
-.. TODO: This is redundant with device topology. But does `gate $0;` require a defcal to
-.. be applied to $0 for $0 to be defined?
+.. TODO: This may be redundant with device topology.
 
 .. code-block::
 
@@ -158,7 +157,6 @@ in the circuit has an associated `defcal`, which we can call hardware-native gat
    CX $0, $1;
    // Define the pulse-level instruction sequence for `h` on physical qubit 0
    defcal h $0 { ... }
-
 
 Physical qubit constraints
 ..........................
@@ -176,9 +174,6 @@ can still be used in such circuits.
 For example, a program defines the `H` gate with the `gate` statement. `H` is therefore a
 supported gate, but not a hardware-native gate. The compiler can decompose the statement `H $0;`
 to hardware-native gates, while still respecting strict qubit mapping.
-
-It is up to the user to refer to the hardware provider's documentation to learn if the provider
-supports physical qubits outside of physical circuits.
 
 It is possible to write a program with both physical and virtual qubits. Such programs are also
 non-physical circuits, and may or may not be supported by compilers or hardware providers.
